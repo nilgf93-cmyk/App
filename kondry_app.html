@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kondry Labs</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --amber: #E8873A;
+      --amber-dim: rgba(232,135,58,0.18);
+      --amber-border: rgba(232,135,58,0.35);
+      --dark: #0f0d0b;
+      --dark2: #181410;
+      --dark3: #221d17;
+      --text: #f0ece6;
+      --text-dim: rgba(240,236,230,0.5);
+      --text-faint: rgba(240,236,230,0.25);
+      --green: #4caf7d;
+      --red: #e05252;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: #080705;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        repeating-linear-gradient(
+          12deg,
+          transparent,
+          transparent 38px,
+          rgba(255,255,255,0.012) 38px,
+          rgba(255,255,255,0.012) 40px
+        ),
+        repeating-linear-gradient(
+          -8deg,
+          transparent,
+          transparent 55px,
+          rgba(255,160,60,0.025) 55px,
+          rgba(255,160,60,0.025) 57px
+        );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .phone {
+      width: 375px;
+      height: 812px;
+      background: var(--dark);
+      border-radius: 50px;
+      overflow: hidden;
+      position: relative;
+      z-index: 1;
+      box-shadow:
+        0 0 0 1px rgba(232,135,58,0.15),
+        0 50px 100px rgba(0,0,0,0.8),
+        inset 0 1px 0 rgba(255,255,255,0.06);
+    }
+
+    .phone::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        repeating-linear-gradient(
+          95deg,
+          transparent,
+          transparent 28px,
+          rgba(255,255,255,0.008) 28px,
+          rgba(255,255,255,0.008) 30px
+        );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .screen {
+      display: none;
+      height: 100%;
+      overflow-y: auto;
+      overflow-x: hidden;
+      flex-direction: column;
+      position: relative;
+      z-index: 1;
+    }
+    .screen.active { display: flex; }
+    .screen::-webkit-scrollbar { display: none; }
+
+    .status-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 28px 0;
+      flex-shrink: 0;
+    }
+    .sb-time { font-size: 14px; font-weight: 500; color: var(--text-dim); letter-spacing: 0.5px; }
+    .sb-icons { display: flex; gap: 5px; align-items: flex-end; }
+    .sb-bar { width: 3px; background: var(--text-faint); border-radius: 1px; }
+
+    /* BIENVENIDA */
+    #screen-welcome { background: var(--dark); }
+
+    .w-body { padding: 28px 28px 0; flex: 1; display: flex; flex-direction: column; }
+
+    .kondry-tag {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--amber);
+      margin-bottom: 28px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .kondry-tag::before {
+      content: '';
+      display: block;
+      width: 20px;
+      height: 1px;
+      background: var(--amber);
+    }
+
+    .w-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 58px;
+      line-height: 0.95;
+      color: var(--text);
+      letter-spacing: 1px;
+      margin-bottom: 20px;
+    }
+    .w-title span { color: var(--amber); }
+
+    .w-sub {
+      font-size: 14px;
+      color: var(--text-dim);
+      line-height: 1.65;
+      margin-bottom: 36px;
+      max-width: 280px;
+    }
+
+    .w-divider {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, var(--amber-border), transparent);
+      margin-bottom: 32px;
+    }
+
+    .w-stats {
+      display: flex;
+      margin-bottom: 36px;
+    }
+    .w-stat {
+      flex: 1;
+      padding-right: 20px;
+      border-right: 1px solid rgba(255,255,255,0.07);
+    }
+    .w-stat:last-child { border-right: none; padding-right: 0; padding-left: 20px; }
+    .w-stat-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 30px;
+      color: var(--amber);
+      letter-spacing: 1px;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .w-stat-label { font-size: 11px; color: var(--text-faint); letter-spacing: 0.5px; }
+
+    .btn-cta {
+      width: 100%;
+      padding: 19px;
+      background: var(--amber);
+      color: #0f0d0b;
+      border: none;
+      border-radius: 14px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 20px;
+      letter-spacing: 2px;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+      margin-bottom: 32px;
+    }
+    .btn-cta:active { transform: scale(0.98); opacity: 0.88; }
+
+    /* FORMULARIO */
+    #screen-form { background: var(--dark2); }
+
+    .f-header {
+      padding: 12px 28px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      background: var(--dark);
+    }
+    .f-header-top { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+    .back-btn {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      background: var(--dark3);
+      border: 1px solid rgba(255,255,255,0.08);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+      color: var(--text-dim);
+      line-height: 1;
+    }
+    .f-screen-label { font-size: 10px; font-weight: 500; letter-spacing: 2.5px; text-transform: uppercase; color: var(--amber); }
+    .f-title { font-family: 'Bebas Neue', sans-serif; font-size: 32px; color: var(--text); letter-spacing: 1px; line-height: 1; }
+
+    .f-body { padding: 24px 28px; flex: 1; overflow-y: auto; }
+    .f-body::-webkit-scrollbar { display: none; }
+
+    .field { margin-bottom: 20px; }
+    .field label { display: block; font-size: 10px; font-weight: 500; color: var(--text-faint); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px; }
+    .field input { width: 100%; padding: 14px 16px; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 15px; color: var(--text); background: var(--dark3); outline: none; transition: border-color 0.2s; }
+    .field input::placeholder { color: var(--text-faint); }
+    .field input:focus { border-color: var(--amber); }
+    .field input.error { border-color: var(--red); }
+    .field input.ok { border-color: var(--green); }
+    .field-hint { margin-top: 5px; font-size: 11px; display: none; }
+    .field-hint.show { display: block; }
+    .field-hint.error { color: var(--red); }
+    .field-hint.ok { color: var(--green); }
+
+    .f-footer { padding: 16px 28px 32px; background: var(--dark2); }
+    .btn-submit { width: 100%; padding: 19px; background: var(--amber); color: #0f0d0b; border: none; border-radius: 14px; font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 2px; cursor: pointer; transition: opacity 0.2s, transform 0.1s; }
+    .btn-submit:active { transform: scale(0.98); opacity: 0.88; }
+
+    /* CONFIRMACIÓN */
+    #screen-success { background: var(--dark); }
+
+    .s-body { flex: 1; display: flex; flex-direction: column; padding: 28px 28px 0; overflow-y: auto; }
+    .s-body::-webkit-scrollbar { display: none; }
+
+    .s-check { width: 52px; height: 52px; border-radius: 50%; background: var(--amber-dim); border: 1px solid var(--amber-border); display: flex; align-items: center; justify-content: center; margin-bottom: 24px; font-size: 22px; }
+
+    .s-title { font-family: 'Bebas Neue', sans-serif; font-size: 42px; color: var(--text); letter-spacing: 1px; line-height: 1; margin-bottom: 8px; }
+    .s-title span { color: var(--amber); }
+    .s-sub { font-size: 14px; color: var(--text-dim); line-height: 1.6; margin-bottom: 32px; }
+
+    .s-card { background: var(--dark3); border: 1px solid rgba(255,255,255,0.07); border-radius: 16px; padding: 20px; margin-bottom: 28px; }
+    .s-card-label { font-size: 10px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; color: var(--amber); margin-bottom: 16px; }
+    .s-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 14px; }
+    .s-row:last-child { border-bottom: none; }
+    .s-row-key { color: var(--text-faint); }
+    .s-row-val { color: var(--text); font-weight: 500; text-align: right; max-width: 200px; word-break: break-word; }
+
+    .s-actions { padding: 0 28px 36px; display: flex; flex-direction: column; gap: 10px; }
+    .btn-sec { width: 100%; padding: 16px; background: transparent; border: 1px solid rgba(255,255,255,0.12); border-radius: 14px; color: var(--text-dim); font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 400; cursor: pointer; transition: border-color 0.2s, color 0.2s; }
+    .btn-sec:hover { border-color: var(--amber-border); color: var(--amber); }
+
+    /* PARTICIPANTES */
+    #screen-list { background: var(--dark); }
+
+    .l-header { padding: 16px 28px 20px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .l-title { font-family: 'Bebas Neue', sans-serif; font-size: 38px; color: var(--text); letter-spacing: 1px; margin-bottom: 16px; }
+    .search-box { display: flex; align-items: center; gap: 10px; background: var(--dark3); border-radius: 10px; padding: 11px 14px; border: 1px solid rgba(255,255,255,0.08); }
+    .search-box input { border: none; background: transparent; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text); outline: none; flex: 1; }
+    .search-box input::placeholder { color: var(--text-faint); }
+    .search-icon { font-size: 13px; color: var(--text-faint); }
+
+    .l-body { flex: 1; overflow-y: auto; }
+    .l-body::-webkit-scrollbar { display: none; }
+
+    .participant { display: flex; align-items: center; padding: 14px 28px; border-bottom: 1px solid rgba(255,255,255,0.04); transition: background 0.15s; }
+    .participant:hover { background: var(--dark3); }
+    .p-avatar { width: 38px; height: 38px; border-radius: 50%; background: var(--amber-dim); border: 1px solid var(--amber-border); display: flex; align-items: center; justify-content: center; font-weight: 500; font-size: 12px; color: var(--amber); margin-right: 14px; flex-shrink: 0; letter-spacing: 0.5px; }
+    .p-name { font-size: 14px; font-weight: 400; color: var(--text); }
+    .p-id { margin-left: auto; font-size: 11px; color: var(--text-faint); letter-spacing: 0.5px; }
+
+    .l-footer { padding: 16px 28px 36px; }
+    .btn-new { width: 100%; padding: 19px; background: var(--amber); color: #0f0d0b; border: none; border-radius: 14px; font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 2px; cursor: pointer; transition: opacity 0.2s, transform 0.1s; }
+    .btn-new:active { transform: scale(0.98); opacity: 0.88; }
+  </style>
+</head>
+<body>
+<div class="phone">
+
+  <!-- SCREEN 1: BIENVENIDA -->
+  <div id="screen-welcome" class="screen active">
+    <div class="status-bar">
+      <span class="sb-time">9:41</span>
+      <div class="sb-icons">
+        <div class="sb-bar" style="height:6px"></div>
+        <div class="sb-bar" style="height:9px"></div>
+        <div class="sb-bar" style="height:12px"></div>
+      </div>
+    </div>
+    <div class="w-body">
+      <div class="kondry-tag">Kondry Labs</div>
+      <div class="w-title">RINDE<br>MÁS.<br><span>RECUPERA</span><br>MEJOR.</div>
+      <div class="w-sub">Regístrate para acceder a tu protocolo de recuperación personalizado.</div>
+      <div class="w-divider"></div>
+      <div class="w-stats">
+        <div class="w-stat">
+          <div class="w-stat-num">+40%</div>
+          <div class="w-stat-label">Recuperación</div>
+        </div>
+        <div class="w-stat">
+          <div class="w-stat-num">3 MIN</div>
+          <div class="w-stat-label">Registro</div>
+        </div>
+      </div>
+      <button class="btn-cta" onclick="navigate('screen-form')">COMENZAR REGISTRO</button>
+    </div>
+  </div>
+
+  <!-- SCREEN 2: FORMULARIO -->
+  <div id="screen-form" class="screen">
+    <div style="background:var(--dark)">
+      <div class="status-bar"><span class="sb-time">9:41</span></div>
+      <div class="f-header">
+        <div class="f-header-top">
+          <button class="back-btn" onclick="navigate('screen-welcome')">&#8249;</button>
+          <span class="f-screen-label">Registro</span>
+        </div>
+        <div class="f-title">TUS DATOS</div>
+      </div>
+    </div>
+    <div class="f-body">
+      <div class="field">
+        <label>Nombre completo</label>
+        <input id="f-nombre" type="text" placeholder="Nombre y apellido" oninput="validateField(this,'nombre')" />
+        <div class="field-hint" id="h-nombre"></div>
+      </div>
+      <div class="field">
+        <label>Correo electrónico</label>
+        <input id="f-mail" type="email" placeholder="email@ejemplo.com" oninput="validateField(this,'mail')" />
+        <div class="field-hint" id="h-mail"></div>
+      </div>
+      <div class="field">
+        <label>Teléfono</label>
+        <input id="f-tel" type="tel" placeholder="+34 612 345 678" oninput="validateField(this,'tel')" />
+        <div class="field-hint" id="h-tel"></div>
+      </div>
+      <div class="field">
+        <label>Ciudad</label>
+        <input id="f-ciudad" type="text" placeholder="Tu ciudad" oninput="validateField(this,'ciudad')" />
+        <div class="field-hint" id="h-ciudad"></div>
+      </div>
+      <div class="field">
+        <label>Deporte principal</label>
+        <input id="f-deporte" type="text" placeholder="Ej: Ciclismo, Running..." oninput="validateField(this,'deporte')" />
+        <div class="field-hint" id="h-deporte"></div>
+      </div>
+    </div>
+    <div class="f-footer">
+      <button class="btn-submit" onclick="submitForm()">ENVIAR</button>
+    </div>
+  </div>
+
+  <!-- SCREEN 3: CONFIRMACIÓN -->
+  <div id="screen-success" class="screen">
+    <div class="status-bar"><span class="sb-time">9:41</span></div>
+    <div class="s-body">
+      <div class="s-check">✓</div>
+      <div class="s-title">LISTO,<br><span>ATLETA.</span></div>
+      <div class="s-sub">Tu registro ha sido completado. Nos pondremos en contacto contigo pronto.</div>
+      <div class="s-card">
+        <div class="s-card-label">Resumen</div>
+        <div class="s-row"><span class="s-row-key">Nombre</span><span class="s-row-val" id="sd-nombre">—</span></div>
+        <div class="s-row"><span class="s-row-key">Email</span><span class="s-row-val" id="sd-mail">—</span></div>
+        <div class="s-row"><span class="s-row-key">Teléfono</span><span class="s-row-val" id="sd-tel">—</span></div>
+        <div class="s-row"><span class="s-row-key">Ciudad</span><span class="s-row-val" id="sd-ciudad">—</span></div>
+        <div class="s-row"><span class="s-row-key">Deporte</span><span class="s-row-val" id="sd-deporte">—</span></div>
+      </div>
+    </div>
+    <div class="s-actions">
+      <button class="btn-cta" style="margin-bottom:0" onclick="navigate('screen-list')">VER PARTICIPANTES</button>
+      <button class="btn-sec" onclick="navigate('screen-welcome')">Volver al inicio</button>
+    </div>
+  </div>
+
+  <!-- SCREEN 4: PARTICIPANTES -->
+  <div id="screen-list" class="screen">
+    <div class="status-bar"><span class="sb-time">9:41</span></div>
+    <div class="l-header">
+      <div class="l-title">PARTICIPANTES</div>
+      <div class="search-box">
+        <span class="search-icon">⌕</span>
+        <input type="text" placeholder="Buscar por nombre" oninput="filterList(this.value)" />
+      </div>
+    </div>
+    <div class="l-body" id="list-body"></div>
+    <div class="l-footer">
+      <button class="btn-new" onclick="navigate('screen-form')">NUEVO REGISTRO</button>
+    </div>
+  </div>
+
+</div>
+<script>
+  var participants = [
+    { nombre: 'Ana Martínez', id: '001' },
+    { nombre: 'Carlos Pérez', id: '002' },
+    { nombre: 'María López', id: '003' }
+  ];
+
+  function navigate(id) {
+    document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+    document.getElementById(id).classList.add('active');
+    document.getElementById(id).scrollTop = 0;
+    if (id === 'screen-list') renderList(participants);
+  }
+
+  function initials(name) {
+    var p = name.trim().split(' ');
+    return (p[0][0] + (p[1] ? p[1][0] : '')).toUpperCase();
+  }
+
+  function renderList(data) {
+    var el = document.getElementById('list-body');
+    if (!data.length) {
+      el.innerHTML = '<div style="padding:40px 28px;text-align:center;color:rgba(240,236,230,0.25);font-size:14px;">Sin resultados</div>';
+      return;
+    }
+    el.innerHTML = data.map(function(p) {
+      return '<div class="participant"><div class="p-avatar">' + initials(p.nombre) + '</div><div class="p-name">' + p.nombre + '</div><div class="p-id">#' + p.id + '</div></div>';
+    }).join('');
+  }
+
+  function filterList(q) {
+    renderList(participants.filter(function(p){ return p.nombre.toLowerCase().includes(q.toLowerCase()); }));
+  }
+
+  var validators = {
+    nombre: function(v) {
+      if (!v) return { ok: false, msg: 'Requerido' };
+      if (v.trim().split(' ').length < 2) return { ok: false, msg: 'Ingresa nombre y apellido' };
+      return { ok: true, msg: '' };
+    },
+    mail: function(v) {
+      if (!v) return { ok: false, msg: 'Requerido' };
+      if (!v.includes('@') || !v.includes('.')) return { ok: false, msg: 'Formato: nombre@dominio.com' };
+      return { ok: true, msg: '' };
+    },
+    tel: function(v) {
+      if (!v) return { ok: false, msg: 'Requerido' };
+      var clean = v.replace(/[\s\-\(\)\+]/g,'');
+      if (clean.length < 7 || isNaN(clean)) return { ok: false, msg: 'Solo números, mínimo 7 dígitos' };
+      return { ok: true, msg: '' };
+    },
+    ciudad: function(v) {
+      if (!v) return { ok: false, msg: 'Requerido' };
+      return { ok: true, msg: '' };
+    },
+    deporte: function(v) {
+      if (!v) return { ok: false, msg: 'Requerido' };
+      return { ok: true, msg: '' };
+    }
+  };
+
+  function validateField(input, key) {
+    var res = validators[key](input.value);
+    var hint = document.getElementById('h-' + key);
+    input.classList.toggle('error', !res.ok && input.value.length > 0);
+    input.classList.toggle('ok', res.ok && input.value.length > 0);
+    if (input.value && !res.ok) {
+      hint.textContent = res.msg;
+      hint.className = 'field-hint show error';
+    } else {
+      hint.textContent = '';
+      hint.className = 'field-hint';
+    }
+  }
+
+  var SHEET_URL = 'https://script.google.com/macros/s/AKfycbwzYKUKqEO7_9Ln7YkkT8-j1Z5xNxSQrGPFjno6ztm-bcsyhkPPzjKnObcfig-MgIRM/exec';
+
+  function submitForm() {
+    var fields = ['nombre','mail','tel','ciudad','deporte'];
+    var allOk = true;
+    fields.forEach(function(k){
+      var el = document.getElementById('f-' + k);
+      var res = validators[k](el.value);
+      if (!res.ok) {
+        el.classList.add('error');
+        var hint = document.getElementById('h-' + k);
+        hint.textContent = res.msg || 'Requerido';
+        hint.className = 'field-hint show error';
+        allOk = false;
+      }
+    });
+    if (!allOk) return;
+
+    var nombre  = document.getElementById('f-nombre').value;
+    var mail    = document.getElementById('f-mail').value;
+    var tel     = document.getElementById('f-tel').value;
+    var ciudad  = document.getElementById('f-ciudad').value;
+    var deporte = document.getElementById('f-deporte').value;
+
+    var btn = document.querySelector('.btn-submit');
+    btn.textContent = 'ENVIANDO...';
+    btn.disabled = true;
+    btn.style.opacity = '0.6';
+
+    var params = '?nombre=' + encodeURIComponent(nombre) +
+                 '&mail='   + encodeURIComponent(mail) +
+                 '&tel='    + encodeURIComponent(tel) +
+                 '&ciudad=' + encodeURIComponent(ciudad) +
+                 '&deporte='+ encodeURIComponent(deporte);
+
+    fetch(SHEET_URL + params)
+    .then(function() {
+      btn.textContent = 'ENVIAR';
+      btn.disabled = false;
+      btn.style.opacity = '1';
+      onSuccess(nombre, mail, tel, ciudad, deporte);
+    })
+    .catch(function() {
+      btn.textContent = 'ENVIAR';
+      btn.disabled = false;
+      btn.style.opacity = '1';
+      onSuccess(nombre, mail, tel, ciudad, deporte);
+    });
+  }
+
+  function onSuccess(nombre, mail, tel, ciudad, deporte) {
+    document.getElementById('sd-nombre').textContent  = nombre;
+    document.getElementById('sd-mail').textContent    = mail;
+    document.getElementById('sd-tel').textContent     = tel;
+    document.getElementById('sd-ciudad').textContent  = ciudad;
+    document.getElementById('sd-deporte').textContent = deporte;
+
+    participants.push({ nombre: nombre, id: String(participants.length + 1).padStart(3,'0') });
+
+    ['nombre','mail','tel','ciudad','deporte'].forEach(function(k){
+      var el = document.getElementById('f-' + k);
+      el.value = '';
+      el.classList.remove('ok','error');
+      document.getElementById('h-' + k).className = 'field-hint';
+    });
+
+    navigate('screen-success');
+  }
+</script>
+</body>
+</html>
