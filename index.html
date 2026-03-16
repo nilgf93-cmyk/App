@@ -57,7 +57,6 @@
     }
 
 
-    #screen-welcome::after,
     #screen-form::after,
     #screen-success::after,
     #screen-list::after {
@@ -104,7 +103,7 @@
       z-index: 0;
     }
 
-    .w-body { padding: 28px 28px 0; flex: 1; display: flex; flex-direction: column; }
+    .w-body { padding: 28px 28px 0; flex: 1; display: flex; flex-direction: column; position: relative; z-index: 2; }
 
     .kondry-tag {
       font-size: 13px;
@@ -129,7 +128,7 @@
       letter-spacing: 1px;
       margin-bottom: 20px;
     }
-    .w-title span { color: #D4A843; }
+    .w-title span { color: rgba(212,168,67,0.35); }
 
     .w-sub {
       font-size: 14px;
@@ -295,7 +294,7 @@
     <div class="w-body">
       <div class="kondry-tag">Kondry Labs</div>
       <div class="w-title">RINDE<br>MÁS.<br><span>RECUPERA</span><br>MEJOR.</div>
-      <div class="w-sub">Regístrate para acceder a tu protocolo de recuperación personalizado.</div>
+      <div class="w-sub">Accede al Founderz Plan — recuperación de élite, soporte prioritario y acceso anticipado a nuevos protocolos.</div>
 
       <button class="btn-cta" onclick="navigate('screen-form')">COMENZAR REGISTRO</button>
     </div>
